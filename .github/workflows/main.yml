@@ -16,7 +16,6 @@ jobs:
           java-version: '20'
           distribution: 'zulu'
       - name: Build with Gradle
-        run: chmod +x ./gradlew
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
@@ -24,7 +23,7 @@ jobs:
       - name: Code coverage
         uses: paambaati/codeclimate-action@v3.2.0
         env:
-          CC_TEST_REPORTER_ID: ba0ec27f9ca16f03d05c4e43b7f893ce91971c0130b3ee60b48ebbe2d4591b5d
+          CC_TEST_REPORTER_ID: 887c35f587b2a67cde8b1065199ca8e508b1d089d3a9d753e361134b9b3cd932
           JACOCO_SOURCE_PATH: app/src/main/java
         with:
           coverageCommand: make report
