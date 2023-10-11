@@ -8,7 +8,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.47.0"
 }
 
-group = "org.example"
+group = "hexlet.code"
 version = "1.0-SNAPSHOT"
 
 repositories {
