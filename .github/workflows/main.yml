@@ -18,8 +18,8 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 8.3
-      - run: ./app/gradlew checkstyleMain
-      - run: ./app/gradlew test
+      - run: sudo ./app/gradlew checkstyleMain
+      - run: sudo ./app/gradlew test
       - name: Code coverage
         uses: paambaati/codeclimate-action@v3.2.0
         env:
