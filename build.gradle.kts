@@ -7,13 +7,14 @@ plugins {
     id("io.freefair.lombok") version "8.3"
     id("com.github.ben-manes.versions") version "0.47.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("java")
 }
 
 group = "hexlet.code"
 version = "1.0-SNAPSHOT"
 
 application {
-    mainClass = "hexlet.code.App"
+    mainClass.set("hexlet.code.App")
 }
 
 repositories {
