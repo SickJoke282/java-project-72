@@ -15,10 +15,10 @@ public final class Url {
     @ToString.Include
     private String name;
 
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
-    public Url(String newName, Timestamp newCreated_at) {
+    public Url(String newName, Timestamp newCreatedAt) {
         name = newName;
-        created_at = newCreated_at;
+        createdAt = newCreatedAt;
     }
 }
