@@ -35,7 +35,8 @@ public class App {
 
         var dataSource = new HikariDataSource(hikariConfig);
         var url = App.class.getClassLoader().getResource("schema.sql");
-        var file = new File(url.getFile().replace("!", ""));
+        System.out.println(url.getFile());
+        var file = new File(url.getFile());
         System.out.println(file.toPath());
         var sql = Files.lines(file.toPath())
                 .collect(Collectors.joining("\n"));
