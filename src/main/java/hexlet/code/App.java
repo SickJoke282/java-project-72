@@ -3,7 +3,7 @@ package hexlet.code;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.resolve.ResourceCodeResolver;
-import hexlet.code.dto.BasePage;
+import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,13 +43,16 @@ public class App {
             statement.execute(sql);
         }
         BaseRepository.dataSource = dataSource;
+
         Javalin app = Javalin.create(config -> config.plugins.enableDevLogging());
         JavalinJte.init(createTemplateEngine());
 
-        app.get("/", ctx -> {
-            var page = new BasePage("Hello, World!");
-            ctx.render("index.jte", Collections.singletonMap("page", page));
-        });
+        app.before(ctx -> ctx.contentType("text/html; charset=utf-8"));
+
+        app.get("/urls", UrlsController::index);
+        app.get("/", UrlsController::build);
+        app.get("/urls/{id}", UrlsController::show);
+        app.post("/urls", UrlsController::create);
         return app;
     }
     public static void main(String[] args) throws SQLException {
