@@ -1,10 +1,10 @@
 package hexlet.code.dto;
 
 import lombok.Getter;
-import lombok.AllArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
+@Setter
 @Getter
 public class BasePage {
-    private String message;
+    private String flash;
 }
