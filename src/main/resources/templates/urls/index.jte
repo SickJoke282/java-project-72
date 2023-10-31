@@ -1,5 +1,6 @@
 @import hexlet.code.util.NamedRoutes
 @import hexlet.code.dto.urls.UrlsPage
+@import java.util.ArrayList
 @param UrlsPage page
 
 @template.layout.page(
@@ -34,10 +35,14 @@
                                 <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                             </td>
                             <td>
-
+                                @if(url.getUrlsChecks() != null && !url.getUrlsChecks().equals(new ArrayList<>()))
+                                    ${url.getUrlsChecks().get(url.getUrlsChecks().size() - 1).getCreatedAt().toString()}
+                                @endif
                             </td>
                             <td>
-
+                                @if(url.getUrlsChecks() != null && !url.getUrlsChecks().equals(new ArrayList<>()))
+                                    ${url.getUrlsChecks().get(url.getUrlsChecks().size() - 1).getStatusCode()}
+                                @endif
                             </td>
                         </tr>
                     @endfor
