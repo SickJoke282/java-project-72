@@ -31,6 +31,6 @@ image-push:
 	docker push hexletcomponents/java-javalin-example:latest
 
 report:
-   	./gradlew jacocoTestReport
+	./gradlew jacocoTestReport
 
 .PHONY: build
