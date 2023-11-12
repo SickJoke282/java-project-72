@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jsoup:jsoup:1.16.2")
     implementation("com.h2database:h2:2.2.222")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.konghq:unirest-java:3.14.5")
