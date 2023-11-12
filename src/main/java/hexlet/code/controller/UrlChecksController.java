@@ -32,12 +32,15 @@ public class UrlChecksController {
             h1 = h1.substring(h1.indexOf(">") + 1);
             Pattern pattern = Pattern.compile(
                     "<meta([a-z\\s=\":]*)description([a-z\\s=\":]*)content=\"[^\\n]*$");
-            Matcher matcher = pattern.matcher(Unirest.get(url.getName()).asString().getBody());
-            System.out.println(Unirest.get(url.getName()).asString().getBody());
+            response = Unirest.get(url.getName()).asString();
+            String str = response.getBody().substring(0, response.getBody().indexOf("<script"));
+            Matcher matcher = pattern.matcher(str);
+            System.out.println(str);
+            System.out.println(matcher.find());
             var description = matcher.find()
                     ? matcher.group()
-                            .substring(matcher.group()
-                                    .indexOf("content=\"") + 1, matcher.group().indexOf("\">"))
+                    .substring(matcher.group()
+                            .indexOf("content=\"") + 1, matcher.group().indexOf("\">"))
                     : "";
             var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt);
             UrlCheckRepository.save(urlCheck, url);
