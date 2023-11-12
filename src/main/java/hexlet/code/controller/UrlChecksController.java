@@ -28,7 +28,9 @@ public class UrlChecksController {
             var statusCode = response.getStatus();
             var createdAt = Timestamp.valueOf(LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            String h1 = "", title = "", description = "";
+            String h1 = "";
+            String title = "";
+            String description = "";
             for (Element headline : newsHeadlines) {
                 h1 = headline.selectFirst("h1") != null
                         ? headline.selectFirst("h1").text() : h1;

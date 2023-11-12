@@ -69,7 +69,8 @@ public class AppTest {
             var response3 = client.post("/urls/1/checks");
             assertThat(response3.code()).isEqualTo(200);
             var response4 = client.get("/urls/1");
-            assertThat(response4.body().string()).contains("Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
+            assertThat(response4.body().string()).contains(
+                    "Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
         });
     }
 
