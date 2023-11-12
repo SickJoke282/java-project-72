@@ -18,7 +18,7 @@
     <main class="flex-grow-1">
         <section>
             <div class="container-lg mt-5">
-                <h1>Сайт: https://www.example.com</h1>
+                <h1>Сайт: ${page.getUrl().getName()}</h1>
 
                 <table class="table table-bordered table-hover mt-3">
                     <tbody>
@@ -53,25 +53,25 @@
                     </thead>
                     <tbody>
                     @if(page.getUrlCheck() != null)
-                        @for(var check : page.getUrlCheck())
+                        @for(int i = page.getUrlCheck().size() - 1; i >= 0; i--)
                             <tr>
                                 <td>
-                                    ${check.getId()}
+                                    ${page.getUrlCheck().get(i).getId()}
                                 </td>
                                 <td>
-                                    ${check.getStatusCode()}
+                                    ${page.getUrlCheck().get(i).getStatusCode()}
                                 </td>
                                 <td>
-                                    ${check.getTitle()}
+                                    ${page.getUrlCheck().get(i).getTitle()}
                                 </td>
                                 <td>
-                                    ${check.getH1()}
+                                    ${page.getUrlCheck().get(i).getH1()}
                                 </td>
                                 <td>
-                                    ${check.getDescription()}
+                                    ${page.getUrlCheck().get(i).getDescription()}
                                 </td>
                                 <td>
-                                    ${check.getCreatedAt().toString()}
+                                    ${page.getUrlCheck().get(i).getCreatedAt().toString()}
                                 </td>
                             </tr>
                         @endfor
