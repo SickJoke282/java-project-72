@@ -32,10 +32,7 @@ public class App {
     }
     public static Javalin getApp() throws  SQLException {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:postgresql://db:5432/"
-                + "postgresql_database_dxq8?"
-                + "password=mjs2SLg9wqKE5r5jXI8yiYHmwl9UPYvt&user=postgresql_database_dxq8_user"
-        );
+        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
 
         var dataSource = new HikariDataSource(hikariConfig);
         InputStream inputStream = App.class.getClassLoader().getResourceAsStream("schema.sql");
