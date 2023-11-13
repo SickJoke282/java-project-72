@@ -6,6 +6,7 @@ import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.UrlChecksController;
 import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +29,11 @@ public class App {
     }
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");
-        return Integer.valueOf(port);
+        return Integer.parseInt(port);
     }
     public static Javalin getApp() throws  SQLException {
         var hikariConfig = new HikariConfig();
-        String jdbcUrl = System.getenv("JDBC_DATABASE_URL") == null ? "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;"
-                : System.getenv("JDBC_DATABASE_URL");
+        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
         hikariConfig.setJdbcUrl(jdbcUrl);
 
         var dataSource = new HikariDataSource(hikariConfig);
@@ -52,13 +52,14 @@ public class App {
 
         app.before(ctx -> ctx.contentType("text/html; charset=utf-8"));
 
-        app.get("/urls", UrlsController::index);
-        app.get("/", UrlsController::build);
-        app.get("/urls/{id}", UrlsController::show);
-        app.post("/urls", UrlsController::create);
-        app.post("/urls/{id}/checks", UrlChecksController::create);
+        app.get(NamedRoutes.urlsPath(), UrlsController::index);
+        app.get(NamedRoutes.mainPath(), UrlsController::build);
+        app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
+        app.post(NamedRoutes.urlsPath(), UrlsController::create);
+        app.post(NamedRoutes.urlCheckPath("{id}"), UrlChecksController::create);
         return app;
     }
+
     public static void main(String[] args) throws SQLException {
         Javalin app = getApp();
         app.start(getPort());
