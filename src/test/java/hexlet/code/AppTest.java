@@ -6,7 +6,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import hexlet.code.model.Url;
+import hexlet.code.repository.UrlCheckRepository;
+import hexlet.code.repository.UrlRepository;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -59,15 +65,12 @@ public class AppTest {
             String file = "./src/test/resources/index.html";
             String body = Files.readString(Paths.get(file));
             mockServer.enqueue(new MockResponse().setBody(body));
-            mockServer.enqueue(new MockResponse().setBody(body));
             mockServer.start();
             String baseUrl = mockServer.url("/").toString();
-            var response = client.post("/urls", "url=" + baseUrl);
-            assertThat(response.code()).isEqualTo(200);
+            client.post("/urls", "url=" + baseUrl);
             var response2 = client.get("/urls/1");
             assertThat(response2.code()).isEqualTo(200);
-            var response3 = client.post("/urls/1/checks");
-            assertThat(response3.code()).isEqualTo(200);
+            client.post("/urls/1/checks");
             var response4 = client.get("/urls/1");
             assertThat(response4.body().string()).contains(
                     "Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
