@@ -1,9 +1,9 @@
 FROM eclipse-temurin:20-jdk
 
-WORKDIR app
+WORKDIR /app
 
-COPY app .
+COPY /app .
 
-RUN gradle installDist
+RUN cd app && gradle installDist
 
 CMD ./build/install/app/bin/app
