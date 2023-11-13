@@ -15,8 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -66,8 +64,7 @@ public class UrlsController {
             Pattern pattern = Pattern.compile("(https://|http://|ftp://)((\\w|\\.|)+(:\\d+)?[^/])");
             Matcher matcher = pattern.matcher(urlFromName.toString());
             matcher.find();
-            var createdAt = Timestamp.valueOf(LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            var createdAt = new Timestamp(System.currentTimeMillis());
             var url = new Url(matcher.group(), createdAt);
             if (!UrlRepository.getEntities().stream()
                     .filter(expectedUrl -> expectedUrl.getName().equals(url.getName()))
