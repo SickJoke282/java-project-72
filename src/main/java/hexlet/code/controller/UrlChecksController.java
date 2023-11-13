@@ -7,39 +7,31 @@ import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.Unirest;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+@Slf4j
 public class UrlChecksController {
     public static void create(Context ctx) {
         var urlId = ctx.pathParamAsClass("id", Long.class).get();
         try {
             var url = UrlRepository.find(urlId)
                     .orElseThrow(() -> new NotFoundResponse("Entity with id = " + urlId + "not found"));
-            Document doc = Jsoup.connect(url.getName()).get();
-            Elements newsHeadlines = doc.getAllElements();
             var response = Unirest.get(url.getName()).asString();
-            var statusCode = response.getStatus();
-            var createdAt = Timestamp.valueOf(LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            String h1 = "";
-            String title = "";
-            String description = "";
-            for (Element headline : newsHeadlines) {
-                h1 = headline.selectFirst("h1") != null
-                        ? headline.selectFirst("h1").text() : h1;
-                title = headline.selectFirst("title") != null
-                        ? headline.selectFirst("title").text() : title;
-                description = headline.selectFirst("meta[name=description]") != null
-                        ? headline.selectFirst("meta[name=description]").attr("content")
-                        : description;
-            }
+            Document doc = Jsoup.parse(response.getBody());
+            int statusCode = response.getStatus();
+            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+            String title = doc.title();
+            String h1 = doc.selectFirst("h1") != null
+                    ? doc.selectFirst("h1").text() : "";
+            String description = doc.selectFirst("meta[name=description]") != null
+                    ? doc.selectFirst("meta[name=description]").attr("content")
+                    : "";
+            log.info("h1 = " + h1);
+            log.info("description = " + description);
             var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt);
             UrlCheckRepository.save(urlCheck, url);
             ctx.sessionAttribute("flash", "Страница успешно проверена");
