@@ -1,8 +1,8 @@
 FROM eclipse-temurin:20-jdk
 
-WORKDIR /app
+WORKDIR app
 
-COPY /app /
+COPY app .
 
 RUN gradle installDist
 
