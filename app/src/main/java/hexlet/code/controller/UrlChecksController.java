@@ -18,7 +18,7 @@ public class UrlChecksController {
     public static void create(Context ctx) {
         var urlId = ctx.pathParamAsClass("id", Long.class).get();
         try {
-            var url = UrlRepository.find(urlId)
+            var url = UrlRepository.findById(urlId)
                     .orElseThrow(() -> new NotFoundResponse("Entity with id = " + urlId + "not found"));
             var response = Unirest.get(url.getName()).asString();
             Document doc = Jsoup.parse(response.getBody());
@@ -32,8 +32,8 @@ public class UrlChecksController {
                     : "";
             log.info("h1 = " + h1);
             log.info("description = " + description);
-            var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt);
-            UrlCheckRepository.save(urlCheck, url);
+            var urlCheck = new UrlCheck(statusCode, title, h1, description, createdAt, urlId);
+            UrlCheckRepository.save(urlCheck);
             ctx.sessionAttribute("flash", "Страница успешно проверена");
         } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный адрес");
