@@ -25,7 +25,7 @@ public class UrlRepository extends BaseRepository {
         }
     }
 
-    public static Optional<Url> find(Long id) throws SQLException {
+    public static Optional<Url> findById(Long id) throws SQLException {
         var sql = "SELECT * FROM urls WHERE id = ?";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
@@ -34,6 +34,24 @@ public class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at");
+                var url = new Url(name, createdAt);
+                url.setId(id);
+                return Optional.of(url);
+            }
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Url> findByName(String urlName) throws SQLException {
+        var sql = "SELECT * FROM urls WHERE name = ?";
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, urlName);
+            var resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                var name = resultSet.getString("name");
+                var createdAt = resultSet.getTimestamp("created_at");
+                var id = resultSet.getLong("id");
                 var url = new Url(name, createdAt);
                 url.setId(id);
                 return Optional.of(url);
