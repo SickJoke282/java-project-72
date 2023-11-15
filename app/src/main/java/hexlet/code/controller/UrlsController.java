@@ -15,37 +15,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Optional;
+
 
 public class UrlsController {
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-        var page = new UrlsPage(urls);
-        List<UrlCheck> urlsCheck = UrlCheckRepository.getEntities();
-        if (!urlsCheck.equals(new ArrayList<>())) {
-            urls.forEach(url -> url
-                            .setUrlsChecks(urlsCheck
-                                    .stream()
-                                    .filter(x -> x.getUrlId().equals(url.getId()))
-                                    .collect(Collectors.toList()))
-            );
-        }
+        Map<Long, UrlCheck> urlChecks = UrlCheckRepository.findLatestChecks();
+        var page = new UrlsPage(urls, urlChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));
     }
 
     public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
-        var url = UrlRepository.find(id)
+        var url = UrlRepository.findById(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + "not found"));
-        List<UrlCheck> urlsCheck = UrlCheckRepository.find(id);
-        url.setUrlsChecks(urlsCheck);
+        List<UrlCheck> urlsCheck = UrlCheckRepository.findByUrlId(id);
         var page = new UrlPage(url, urlsCheck);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
@@ -61,15 +50,9 @@ public class UrlsController {
         try {
             String name = ctx.formParamAsClass("url", String.class).get();
             URL urlFromName = new URL(name.trim().toLowerCase());
-            Pattern pattern = Pattern.compile("(https://|http://|ftp://)((\\w|\\.|)+(:\\d+)?[^/])");
-            Matcher matcher = pattern.matcher(urlFromName.toString());
-            matcher.find();
             var createdAt = new Timestamp(System.currentTimeMillis());
-            var url = new Url(matcher.group(), createdAt);
-            if (!UrlRepository.getEntities().stream()
-                    .filter(expectedUrl -> expectedUrl.getName().equals(url.getName()))
-                    .collect(Collectors.toSet())
-                    .equals(new LinkedHashSet<>())) {
+            var url = new Url(urlFromName.toString(), createdAt);
+            if (!UrlRepository.findByName(url.getName()).equals(Optional.empty())) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.redirect(NamedRoutes.urlsPath());
             } else {
