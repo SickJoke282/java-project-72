@@ -27,6 +27,7 @@
                     </thead>
                     <tbody>
                     @for(var url : page.getUrls())
+                        !{var urlCheck = page.getLatestChecks().get(url.getId());}
                         <tr>
                             <td>
                                 ${url.getId()}
@@ -35,14 +36,10 @@
                                 <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                             </td>
                             <td>
-                                @if(url.getUrlsChecks() != null && !url.getUrlsChecks().equals(new ArrayList<>()))
-                                    ${url.getUrlsChecks().get(url.getUrlsChecks().size() - 1).getCreatedAt().toString()}
-                                @endif
+                                ${urlCheck == null ? "" : urlCheck.getCreatedAt().toString()}
                             </td>
                             <td>
-                                @if(url.getUrlsChecks() != null && !url.getUrlsChecks().equals(new ArrayList<>()))
-                                    ${url.getUrlsChecks().get(url.getUrlsChecks().size() - 1).getStatusCode()}
-                                @endif
+                                ${urlCheck == null ? "" : String.valueOf(urlCheck.getStatusCode())}
                             </td>
                         </tr>
                     @endfor
