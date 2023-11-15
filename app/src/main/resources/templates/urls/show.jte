@@ -54,25 +54,25 @@
                     </thead>
                     <tbody>
                     @if(page.getUrlCheck() != null)
-                        @for(int i = page.getUrlCheck().size() - 1; i >= 0; i--)
+                        @for(var urlCheck : page.getUrlCheck())
                             <tr>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getId()}
+                                    ${urlCheck.getId()}
                                 </td>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getStatusCode()}
+                                    ${urlCheck.getStatusCode()}
                                 </td>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getTitle()}
+                                    ${urlCheck.getTitle()}
                                 </td>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getH1()}
+                                    ${urlCheck.getH1()}
                                 </td>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getDescription()}
+                                    ${urlCheck.getDescription()}
                                 </td>
                                 <td>
-                                    ${page.getUrlCheck().get(i).getCreatedAt().toString()}
+                                    ${urlCheck.getCreatedAt().toString()}
                                 </td>
                             </tr>
                         @endfor
