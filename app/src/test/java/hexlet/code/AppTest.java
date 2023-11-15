@@ -22,7 +22,7 @@ public class AppTest {
     Javalin app;
     private static MockWebServer mockServer;
     @BeforeEach
-    public final void setUp() throws SQLException {
+    public final void setUp() throws SQLException, IOException {
         app = App.getApp();
     }
 
