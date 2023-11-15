@@ -13,12 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class App {
@@ -31,15 +29,15 @@ public class App {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.parseInt(port);
     }
-    public static Javalin getApp() throws  SQLException {
+    public static Javalin getApp() throws SQLException, IOException {
         var hikariConfig = new HikariConfig();
         String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
         hikariConfig.setJdbcUrl(jdbcUrl);
 
         var dataSource = new HikariDataSource(hikariConfig);
-        InputStream inputStream = App.class.getClassLoader().getResourceAsStream("schema.sql");
-        String sql = new BufferedReader(new InputStreamReader(inputStream))
-                .lines().collect(Collectors.joining("\n"));
+        var url = App.class.getClassLoader().getResource("schema.sql");
+        var file = new File(url.getFile());
+        String sql = Files.readString(file.toPath());
         log.info(sql);
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
@@ -60,7 +58,7 @@ public class App {
         return app;
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IOException {
         Javalin app = getApp();
         app.start(getPort());
     }
