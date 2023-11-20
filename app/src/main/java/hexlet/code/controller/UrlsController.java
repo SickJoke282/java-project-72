@@ -49,9 +49,17 @@ public class UrlsController {
     public static void create(Context ctx) throws SQLException {
         try {
             String name = ctx.formParamAsClass("url", String.class).get();
-            URL urlFromName = new URL(name.trim().toLowerCase());
+            URL parsedUrl = new URL(name.trim());
+            String normalizedUrl = String
+                    .format(
+                            "%s://%s%s",
+                            parsedUrl.getProtocol(),
+                            parsedUrl.getHost(),
+                            parsedUrl.getPort() == -1  ? "" : ":" + parsedUrl.getPort()
+                    )
+                    .toLowerCase();
             var createdAt = new Timestamp(System.currentTimeMillis());
-            var url = new Url(urlFromName.toString(), createdAt);
+            var url = new Url(normalizedUrl, createdAt);
             if (!UrlRepository.findByName(url.getName()).equals(Optional.empty())) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.redirect(NamedRoutes.urlsPath());
