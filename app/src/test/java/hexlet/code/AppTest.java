@@ -6,7 +6,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
+import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
+import hexlet.code.repository.UrlRepository;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -54,21 +60,49 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrlCheck() {
+    public void testCreateUrlCheck() throws SQLException {
         JavalinTest.test(app, (server, client) -> {
             String file = "./src/test/resources/index.html";
             String body = Files.readString(Paths.get(file));
             mockServer.enqueue(new MockResponse().setBody(body));
             mockServer.start();
             String baseUrl = mockServer.url("/").toString();
-            client.post("/urls", "url=" + baseUrl);
-            var response2 = client.get("/urls/1");
+            System.out.println(baseUrl);
+            var requestBody = "url=" + baseUrl;
+            var response = client.post("/urls", requestBody);
+            assertThat(response.code()).isEqualTo(200);
+            var response2 = client.post("/urls/1/checks");
             assertThat(response2.code()).isEqualTo(200);
-            client.post("/urls/1/checks");
-            var response4 = client.get("/urls/1");
-            assertThat(response4.body().string()).contains(
-                    "Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
         });
+        Map<Long, UrlCheck> urlChecks = UrlCheckRepository.findLatestChecks();
+        UrlCheck urlCheck = urlChecks.get(1L);
+        assertThat(urlChecks).isNotNull();
+        assertThat(urlCheck.getId()).isEqualTo(1);
+        assertThat(urlCheck.getStatusCode()).isEqualTo(200);
+        assertThat(urlCheck.getTitle()).isEqualTo(
+                "Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
+        assertThat(urlCheck.getH1()).isEqualTo(
+                "Лучшая школа программирования по версии пользователей Хабра");
+        assertThat(urlCheck.getDescription()).isEqualTo(
+                "Хекслет — лучшая школа программирования по версии пользователей Хабра. " +
+                        "Авторские программы обучения с практикой и готовыми проектами в резюме. " +
+                        "Помощь в трудоустройстве после успешного окончания обучения");
+    }
+
+    @Test
+    void testStore() throws SQLException {
+        String inputUrl = "https://ru.hexlet.io";
+
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + inputUrl;
+            var response = client.post("/urls", requestBody);
+            assertThat(response.code()).isEqualTo(200);
+        });
+
+        Url actualUrl = UrlRepository.findByName(inputUrl).orElse(null);
+
+        assertThat(actualUrl).isNotNull();
+        assertThat(actualUrl.getName()).isEqualTo(inputUrl);
     }
 
     @Test
