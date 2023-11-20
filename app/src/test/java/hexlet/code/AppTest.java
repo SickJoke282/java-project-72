@@ -70,7 +70,7 @@ public class AppTest {
             client.post("/urls/" + actualUrl.getId() + "/checks");
             var response = client.get("/urls/" + actualUrl.getId());
             assertThat(response.code()).isEqualTo(200);
-            });
+        });
         var actualCheckUrl = UrlCheckRepository
                 .findLatestChecks().get(actualUrl.getId());
         assertThat(actualCheckUrl).isNotNull();
