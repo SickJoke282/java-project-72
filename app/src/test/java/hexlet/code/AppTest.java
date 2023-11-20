@@ -6,10 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Map;
+import java.sql.Timestamp;
 
 import hexlet.code.model.Url;
-import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import okhttp3.mockwebserver.MockResponse;
@@ -32,8 +31,9 @@ public class AppTest {
     }
 
     @BeforeAll
-    public static void startServer() {
+    public static void startServer() throws IOException {
         mockServer = new MockWebServer();
+        mockServer.start();
     }
 
     @AfterAll
@@ -59,30 +59,26 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrlCheck() throws SQLException {
+    public void testCreateUrlCheck() throws SQLException, IOException {
+        String file = "./src/test/resources/index.html";
+        String body = Files.readString(Paths.get(file));
+        mockServer.enqueue(new MockResponse().setBody(body));
+        String baseUrl = mockServer.url("/").toString();
+        var actualUrl = new Url(baseUrl, new Timestamp(System.currentTimeMillis()));
+        UrlRepository.save(actualUrl);
         JavalinTest.test(app, (server, client) -> {
-            String file = "./src/test/resources/index.html";
-            String body = Files.readString(Paths.get(file));
-            mockServer.enqueue(new MockResponse().setBody(body));
-            mockServer.start();
-            String baseUrl = mockServer.url("/").toString();
-            System.out.println(baseUrl);
-            var requestBody = "url=" + baseUrl;
-            var response = client.post("/urls", requestBody);
+            client.post("/urls/" + actualUrl.getId() + "/checks");
+            var response = client.get("/urls/" + actualUrl.getId());
             assertThat(response.code()).isEqualTo(200);
-            var response2 = client.post("/urls/1/checks");
-            assertThat(response2.code()).isEqualTo(200);
-        });
-        Map<Long, UrlCheck> urlChecks = UrlCheckRepository.findLatestChecks();
-        UrlCheck urlCheck = urlChecks.get(1L);
-        assertThat(urlChecks).isNotNull();
-        assertThat(urlCheck.getId()).isEqualTo(1);
-        assertThat(urlCheck.getStatusCode()).isEqualTo(200);
-        assertThat(urlCheck.getTitle()).isEqualTo(
+            });
+        var actualCheckUrl = UrlCheckRepository
+                .findLatestChecks().get(actualUrl.getId());
+        assertThat(actualCheckUrl).isNotNull();
+        assertThat(actualCheckUrl.getTitle()).isEqualTo(
                 "Хекслет — онлайн-школа программирования, онлайн-обучение ИТ-профессиям");
-        assertThat(urlCheck.getH1()).isEqualTo(
+        assertThat(actualCheckUrl.getH1()).isEqualTo(
                 "Лучшая школа программирования по версии пользователей Хабра");
-        assertThat(urlCheck.getDescription()).isEqualTo(
+        assertThat(actualCheckUrl.getDescription()).isEqualTo(
                 "Хекслет — лучшая школа программирования по версии пользователей Хабра. "
                         + "Авторские программы обучения с практикой и готовыми проектами в резюме. "
                         + "Помощь в трудоустройстве после успешного окончания обучения");
