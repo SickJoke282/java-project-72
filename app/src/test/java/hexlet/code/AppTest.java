@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import hexlet.code.model.Url;
@@ -84,9 +83,9 @@ public class AppTest {
         assertThat(urlCheck.getH1()).isEqualTo(
                 "Лучшая школа программирования по версии пользователей Хабра");
         assertThat(urlCheck.getDescription()).isEqualTo(
-                "Хекслет — лучшая школа программирования по версии пользователей Хабра. " +
-                        "Авторские программы обучения с практикой и готовыми проектами в резюме. " +
-                        "Помощь в трудоустройстве после успешного окончания обучения");
+                "Хекслет — лучшая школа программирования по версии пользователей Хабра. "
+                        + "Авторские программы обучения с практикой и готовыми проектами в резюме. "
+                        + "Помощь в трудоустройстве после успешного окончания обучения");
     }
 
     @Test
